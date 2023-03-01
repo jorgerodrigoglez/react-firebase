@@ -1,16 +1,30 @@
+import{ useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from "react-router-dom";
 import { useForm } from "../../hooks";
+import { checkingAuthentication } from "../../store/auth";
 
 export const LoginPage = () => {
 
+  // redux
+  const { status } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+
+  // hook valores del formulario
   const { email, password , handleInputChange } = useForm({
     email: 'jrg@gmail.com',
     password: '123456',
   });
 
+  // memorizar y evaluar el status para desabilitar los botones cuando el status sea igual a 'checking'
+  // la función devuelve un tru o un false
+  const isAuthenticating = useMemo(() => status === 'checking', [status]);
+
   const onSubmit = (event) => {
     event.preventDefault();
-    console.log({email,password})
+    console.log({email,password});
+    // llamada a funcion asincrona del thunks
+    dispatch(checkingAuthentication());
   }
 
   return (
@@ -38,7 +52,7 @@ export const LoginPage = () => {
         <button
           type="submit"
           className="auth__btn"
-          //disabled={loading}
+          disabled={ isAuthenticating }
         >
           Login
         </button>
