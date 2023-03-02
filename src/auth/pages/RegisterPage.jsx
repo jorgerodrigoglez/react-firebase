@@ -1,27 +1,35 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useForm } from "../../hooks";
-import { startCreatingUserWithEmailPassword } from '../../store/auth';
+import { startCreatingUserWithEmailPassword } from "../../store/auth";
 
 const formData = {
   email: "jrg@gmail.com",
   password: "123456",
-  displayName: "Jorge RG",
+  displayName: "Jorge RG"
 };
 
 // realizar las validaciones
 const formValidations = {
-  email : [ (value) => value.includes('@') ,'El Correo debe tener una @'],
-  password : [ (value) => value.length >= 6 ,'El password debe de tener más de 6 letras'],
-  displayName : [ (value) => value.length >= 5 ,'El nombre es obligatorio'],
-}
+  email: [value => value.includes("@"), "El Correo debe tener una @"],
+  password: [
+    value => value.length >= 6,
+    "El password debe de tener más de 6 letras"
+  ],
+  displayName: [value => value.length >= 5, "El nombre es obligatorio"]
+};
 
 export const RegisterPage = () => {
   // redux
   const dispatch = useDispatch();
+  const { status, errorMessage } = useSelector(state => state.auth);
   // state para controlar el submit del formulario
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // memorizar y evaluar el status para desabilitar los botones cuando el status sea igual a 'checking'
+  // la función devuelve un true o un false
+  const isAuthenticating = useMemo(() => status === "checking", [status]);
 
   // hook valores del formulario
   const {
@@ -33,8 +41,8 @@ export const RegisterPage = () => {
     isFormValid,
     displayNameValid,
     emailValid,
-    passwordValid,
-  } = useForm( formData, formValidations );
+    passwordValid
+  } = useForm(formData, formValidations);
 
   //console.log({displayNameValid,passwordValid,emailValid});
 
@@ -43,14 +51,14 @@ export const RegisterPage = () => {
     //console.log(formValues);
     setFormSubmitted(true);
     // si el formulario no es valido no continua la ejecución
-    if(!isFormValid) return;
+    if (!isFormValid) return;
     // llamada a funcion para crear registro de usuario en firebase, ver store/auth/thunks
-    dispatch(startCreatingUserWithEmailPassword( formValues ));
+    dispatch(startCreatingUserWithEmailPassword(formValues));
   };
 
   return (
     <div className="auth">
-      <form className="auth__form" onSubmit={onSubmit}>
+      <form className="auth__form animate__animated animate__fadeIn animate__faster" onSubmit={onSubmit}>
         <h3 className="auth__title">Register:</h3>
 
         <input
@@ -61,8 +69,8 @@ export const RegisterPage = () => {
           value={displayName}
           onChange={handleInputChange}
         />
-        {(!!displayNameValid && formSubmitted) && <p>{displayNameValid}</p>}
-        
+        {!!displayNameValid && formSubmitted && <p className="error__message">{displayNameValid}</p>}
+
         <input
           type="text"
           placeholder="Email"
@@ -72,7 +80,7 @@ export const RegisterPage = () => {
           value={email}
           onChange={handleInputChange}
         />
-        {(!!emailValid && formSubmitted) && <p>{emailValid}</p>}
+        {!!emailValid && formSubmitted && <p className="error__message">{emailValid}</p>}
 
         <input
           type="password"
@@ -82,9 +90,12 @@ export const RegisterPage = () => {
           value={password}
           onChange={handleInputChange}
         />
-        {(!!passwordValid && formSubmitted) && <p>{passwordValid}</p>}
+        {!!passwordValid && formSubmitted && <p className="error__message">{passwordValid}</p>}
 
-        <button type="submit" className="auth__btn">
+        {/* Muestra el error de firebase */}
+        <p className="error__message__firebase">{!!errorMessage && errorMessage}</p>
+
+        <button type="submit" className="auth__btn" disabled={isAuthenticating}>
           Register
         </button>
 

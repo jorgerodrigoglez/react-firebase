@@ -1,35 +1,35 @@
-import{ useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useForm } from "../../hooks";
-import { checkingAuthentication } from "../../store/auth";
+import { startLoginWithEmailPassword } from "../../store/auth";
 
 export const LoginPage = () => {
-
   // redux
-  const { status } = useSelector(state => state.auth);
+  const { status, errorMessage } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   // hook valores del formulario
-  const { email, password , handleInputChange } = useForm({
-    email: 'jrg@gmail.com',
-    password: '123456',
+  const { email, password, handleInputChange } = useForm({
+    email: "jrg@gmail.com",
+    password: "123456"
   });
 
   // memorizar y evaluar el status para desabilitar los botones cuando el status sea igual a 'checking'
-  // la función devuelve un tru o un false
-  const isAuthenticating = useMemo(() => status === 'checking', [status]);
+  // la función devuelve un true o un false
+  const isAuthenticating = useMemo(() => status === "checking", [status]);
 
-  const onSubmit = (event) => {
+  const onSubmit = event => {
     event.preventDefault();
-    console.log({email,password});
+    //console.log({ email, password });
     // llamada a funcion asincrona del thunks
-    dispatch(checkingAuthentication());
-  }
+    // llamada a funcion para crear el login de usuario en firebase, ver store/auth/thunks
+    dispatch(startLoginWithEmailPassword({ email, password }));
+  };
 
   return (
     <div className="auth">
-      <form className="auth__form" onSubmit={onSubmit}>
+      <form className="auth__form animate__animated animate__fadeIn animate__faster" onSubmit={onSubmit}>
         <h3 className="auth__title">Login:</h3>
         <input
           type="text"
@@ -49,11 +49,12 @@ export const LoginPage = () => {
           onChange={handleInputChange}
         />
 
-        <button
-          type="submit"
-          className="auth__btn"
-          disabled={ isAuthenticating }
-        >
+        {/* Muestra el error de firebase */}
+        <p className="error__message__firebase">
+          {!!errorMessage && errorMessage}
+        </p>
+
+        <button type="submit" className="auth__btn" disabled={isAuthenticating}>
           Login
         </button>
 

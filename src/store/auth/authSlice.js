@@ -19,7 +19,7 @@ export const authSlice = createSlice({
     },
 
     login: (state, { payload } ) => {
-      console.log(payload);
+      //console.log(payload);
       state.status = "authenticated";
       state.uid = payload.uid;
       state.email = payload.email;
@@ -32,7 +32,8 @@ export const authSlice = createSlice({
       state.uid = null;
       state.email = null;
       state.displayName = null;
-      state.errorMessage = payload.errorMessage;
+      // ? comprueba si viene  el errorMessage en el payload
+      state.errorMessage = payload?.errorMessage;
     },
   }
 });

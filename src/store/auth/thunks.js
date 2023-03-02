@@ -1,5 +1,5 @@
 import { checkingCredentials } from "./";
-import { registerUserWidthEmailPassword } from "../../firebase/providers";
+import { registerUserWidthEmailPassword, loginWithEmailPassword, logoutFirebase } from "../../firebase/providers";
 import { logout, login } from "./authSlice";
 
 // cambia la autenticación
@@ -27,3 +27,27 @@ export const startCreatingUserWithEmailPassword = ({ email, password, displayNam
     }
 }
 
+// login de usuario con email y password
+export const startLoginWithEmailPassword = ({ email, password }) => {
+    return async( dispatch )  => {
+        // llama al reducer de authSlice
+        dispatch(checkingCredentials());
+        // llamada a la funcion de firebase/providers
+        const { ok, uid, displayName, errorMessage } = await loginWithEmailPassword({ email, password });
+        //console.log(resp);
+        //console.log(ok,uid,displayName,errorMessage);
+        // realizamos el logout - en caso de que la respuesta no sea ok
+        if(!ok) return dispatch(logout({ errorMessage }));
+        // realizamos el login en caso de que la respuesta sea ok
+        dispatch(login({ uid, displayName, email }));
+
+    }
+}
+
+// logout asociado al boton de onLogout
+export const startLogout = () => {
+    return async( dispatch ) => {
+        await logoutFirebase();
+        dispatch( logout() );
+    }
+}
