@@ -11,8 +11,8 @@ export const LoginPage = () => {
 
   // hook valores del formulario
   const { email, password, handleInputChange } = useForm({
-    email: "jrg@gmail.com",
-    password: "123456"
+    email: "",
+    password: ""
   });
 
   // memorizar y evaluar el status para desabilitar los botones cuando el status sea igual a 'checking'

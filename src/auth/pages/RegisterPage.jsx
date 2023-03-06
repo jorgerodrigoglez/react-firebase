@@ -5,9 +5,9 @@ import { useForm } from "../../hooks";
 import { startCreatingUserWithEmailPassword } from "../../store/auth";
 
 const formData = {
-  email: "jrg@gmail.com",
-  password: "123456",
-  displayName: "Jorge RG"
+  email: "",
+  password: "",
+  displayName: ""
 };
 
 // realizar las validaciones

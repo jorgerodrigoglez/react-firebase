@@ -1,0 +1,213 @@
+/* Modal */
+.ReactModalPortal > div {
+    opacity: 0;
+  }
+  
+  .ReactModalPortal .ReactModal__Overlay {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 999;
+  }
+  
+  .ReactModalPortal .ReactModal__Overlay--after-open {
+    opacity: 1;
+  }
+  
+  .ReactModalPortal .ReactModal__Overlay--before-close {
+    opacity: 0;
+  }
+  
+  .modal {
+    display: block;
+    width: 600px;
+    background-color: $google-blue;
+    padding: 1.5rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    border-radius: 10px;
+    box-shadow: 5px 5px 5px $grey;
+  
+    h1 {
+      font-size: fs(normal);
+      font-family: $basefont;
+      color: $black;
+      padding: $baselineheight;
+      border-bottom: dashed 2px $black;
+    }
+  
+    label {
+      display: block;
+      margin-top: $baselineheight;
+      padding-bottom: $baselineheight;
+      padding-left: 10px;
+      font-size: fs(small) * 1.25;
+      color: $black;
+      font-weight: bold;
+      font-family: $altfont;
+    }
+  
+    &--form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-top: $baselineheight;
+      padding: $baselineheight;
+    }
+  
+    &--priority,
+    &--title,
+    &--select,
+    &--category {
+      width: 50%;
+      background-color: $button-active-blue;
+      padding: $baselineheight * 1.1;
+      margin-top: $baselineheight;
+      margin-right: $baselineheight;
+      border-radius: 5px;
+      //border: 1px solid $compcolor;
+      position: relative;
+  
+      &-input {
+        width: 90%;
+        padding: $baselineheight;
+        font-family: $basefont;
+        font-size: fs(small) * 1.1;
+        border-radius: 5px;
+        border: none;
+      }
+  
+      &-checkbox {
+        padding: $baselineheight;
+        margin-top: $baselineheight;
+        background-color: $black;
+        color: $white;
+        font-family: $basefont;
+        font-size: fs(small);
+        border-radius: 5px;
+        opacity: 0.8;
+        transition: opacity 0.2s ease-in-out;
+  
+        &:hover {
+          opacity: 1;
+        }
+      }
+      &-select {
+        width: 70%;
+        padding: $baselineheight;
+        font-weight: bold;
+        font-family: $altfont;
+        font-size: fs(small) * 1.1;
+        background-color: $google-blue;
+        opacity: 0.5;
+      }
+    }
+  
+    &--date-picker {
+      width: 50%;
+      padding: $baselineheight;
+      margin-top: $baselineheight;
+      margin-right: $baselineheight;
+  
+      &-input {
+        width: 90%;
+        padding: $baselineheight;
+        font-family: $basefont;
+        font-size: fs(small) * 1.1;
+        border-radius: 5px;
+        border: none;
+      }
+    }
+    &--description {
+      width: 90%;
+      margin-top: 5px;
+      padding: $baselineheight;
+      font-family: $basefont;
+      font-size: fs(small) * 1.1;
+      border-radius: 5px;
+      border: none;
+    }
+  
+    &--color {
+      height: 30px;
+      width: 100px;
+      position: absolute;
+      top: 0;
+      right: 10px;
+      text-align: right;
+      margin-top: $baselineheight;
+      padding: $baselineheight;
+      font-family: $basefont;
+      font-size: fs(small) * 1.1;
+  
+      //----
+      cursor: pointer;
+      outline: 0;
+      border: 0;
+      border-radius: 0;
+      border-radius: 12px;
+      transition: all 0.25s ease;
+  
+      option {
+        font-family: $basefont;
+        font-size: fs(small) * 1.1;
+      }
+  
+      /* reset*/
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+  
+    &--count{
+      padding: $baselineheight;
+      margin-top: $gutterwidth;
+      width: 50%;
+      text-align: center;
+      border-top: dotted 1px $black;
+      border-bottom: dotted 1px $black;
+  
+      &--label{
+        padding: $baselineheight;
+        margin-right: $baselineheight;
+        font-family: $altfont;
+        font-size: fs(small);
+        background-color: #fff;
+      }
+  
+      &-input-spent,
+      &-input-entry{
+        padding: $baselineheight;
+        width: 50px;
+        border-radius: $radius;
+        border: none;
+      }
+    }
+  
+  
+    &--btn {
+      margin-top: $gutterwidth * 2;
+      padding: $baselineheight;
+      background-color: $compcolor;
+      font-family: $basefont;
+      text-align: center;
+      padding-left: $gutterwidth;
+      font-size: fs(small) * 1.2;
+      color: $black;
+      opacity: 1;
+      border-radius: 10px;
+  
+      span {
+        margin-left: 10px;
+      }
+  
+      &:hover {
+        opacity: 0.9;
+        transition: opacity 0.5s ease-in-out;
+      }
+    }
+  }

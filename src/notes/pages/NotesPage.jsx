@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { startLogout } from "../../store/auth";
+import { ModalNotes } from "../components/";
 
 export const NotesPage = () => {
 
@@ -21,6 +22,10 @@ export const NotesPage = () => {
                 LOGOUT
             </button>
             <h1>{displayName}</h1>
+
+            <ModalNotes/>
         </div>
     )
 }
+
+
