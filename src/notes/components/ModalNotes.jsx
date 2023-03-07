@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
 import Modal from "react-modal";
 
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -10,7 +11,8 @@ registerLocale("es", es);
 import Swall from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-import { useForm } from "../../hooks";
+import { useForm, useUiStore, useNotesStore } from "../../hooks";
+import { colors, colorsPriority } from "../../ui";
 
 // Estilos del modal
 const customStyles = {
@@ -28,35 +30,40 @@ Modal.setAppElement("#root");
 
 // valores iniciales del formulario
 const initialForm = {
-    category: "",
-    task: "",
-    description: "",
-    start: new Date(),
-    end: addHours(new Date(), 2),
-    color: "#FF8000",
-    priority: 0,
-    priorityColor: "#FFF",
-    stateNote: true,
-    complete: false,
-    spent: 0,
-    entry: 0
-  };
-
+  category: "",
+  task: "",
+  description: "",
+  start: new Date(),
+  end: addHours(new Date(), 2),
+  color: "#FF8000",
+  //priority: 0,
+  priorityColor: "#FFF",
+  //stateNote: true,
+  complete: false,
+  spent: 0,
+  entry: 0,
+};
 
 export const ModalNotes = () => {
   // componente de NotesPage
+  // redux
+  // controla el disable del btn del submit del formulario en ModalNotes.jsx
+  const { isSaving } = useSelector(state => state.notes);
   // hook useForm
   // hook valores del formulario
   const { formValues, setFormValues, handleInputChange } = useForm(initialForm);
-  // use State para cerrar el modal
-  const [isOpen, setIsOpen] = useState(true);
+  // hook useUiStore
+  // para acciones del UI - abrir o cerrar modal
+  const { isOpenModal, closeModal } = useUiStore();
+  // hook useNotesStore
+  // para acciones de store de notas - guardar nueva nota - notesSlice.js
+  const { startSavingNote } = useNotesStore();
   // comprueba si el submit del formulario se ha realizad
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // función para cerrar modal
-  const onCloseModal = () => {
-    console.log("cerrando modal");
-    setIsOpen(false);
+  // función para cerrar modal - proviene del hook
+  const uiCloseModal = () => {
+    closeModal();
   };
 
   // funcion del datepicker para cambiar valores del end y start
@@ -71,13 +78,11 @@ export const ModalNotes = () => {
   // crear estilos css en archivo scss correspondiente
   const errorClass = useMemo(() => {
     if (!formSubmitted) return "";
-    return formValues.category.length > 0
-      ? ""
-      : "is-invalid";
+    return formValues.category.length > 0 ? "" : "is-invalid";
   }, [formValues.category, formSubmitted]);
 
   // submit del formulario
-  const onSubmit = event => {
+  const onSubmit = async event => {
     event.preventDefault();
     setFormSubmitted(true);
     // validacion de fechas
@@ -96,19 +101,47 @@ export const ModalNotes = () => {
     if (formValues.category.length <= 0) return;
 
     // impresión valores del formulario
-    console.log({formValues});
+    //console.log({ formValues });
+    // guardado del datos de formulario
+    await startSavingNote(formValues);
 
+    // cierra el modal
+    closeModal();
+    // vuelve el submit del formulario a su estado original
+    setFormSubmitted(false);
+    // limpia los campos del formulario
+    setFormValues(initialForm);
   };
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onCloseModal}
+      isOpen={isOpenModal}
+      onRequestClose={uiCloseModal}
       style={customStyles}
       className="modal"
       closeTimeoutMS={200}
     >
       <form className="modal--form" onSubmit={onSubmit}>
+        <h1>Añadir nota</h1>
+        <div className="modal--color">
+          <label>Color de nota:</label>
+          <select
+            name="color"
+            className="modal--color--select"
+            onChange={handleInputChange}
+            value={formValues.color}
+            style={{ backgroundColor: formValues.color }}
+            //disabled={checkInputColor ? "disabled" : null}
+          >
+            <option>Selecciona color</option>
+            {colors.map(col => (
+              <option key={col.id} value={col.color}>
+                {col.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="row">
           <div className="modal--category">
             {/* <label>Proyecto:{formValues.category}</label> */}
@@ -158,23 +191,6 @@ export const ModalNotes = () => {
                 ))} */}
             </select>
           </div>
-          <div className="modal--color">
-            <select
-              name="color"
-              className="modal--color"
-              onChange={handleInputChange}
-              value={formValues.color}
-              //style={{ backgroundColor: formValues.color }}
-              //disabled={checkInputColor ? "disabled" : null}
-            >
-              <option>Selecciona color</option>
-              {/* {colors.map(col => (
-                <option key={col.id} value={col.color} className={col.class}>
-                  {col.name}
-                </option>
-              ))} */}
-            </select>
-          </div>
         </div>
 
         <div className="row">
@@ -197,14 +213,14 @@ export const ModalNotes = () => {
               className="modal--priority-input"
               onChange={handleInputChange}
               value={formValues.priorityColor}
-              //style={{ backgroundColor: formValues.priorityColor }}
+              style={{ backgroundColor: formValues.priorityColor }}
             >
               <option>--Selecciona--</option>
-              {/* {colorsPriority.map(opt => (
-                <option key={opt.id} value={opt.color} className={opt.class}>
+              {colorsPriority.map(opt => (
+                <option key={opt.id} value={opt.color}>
                   {opt.text}
                 </option>
-              ))} */}
+              ))}
             </select>
           </div>
         </div>
@@ -262,6 +278,7 @@ export const ModalNotes = () => {
               autoComplete="off"
               value={formValues.spent}
               onChange={handleInputChange}
+              min="0"
             />
           </div>
           <div className="modal--count">
@@ -274,14 +291,15 @@ export const ModalNotes = () => {
               autoComplete="off"
               value={formValues.entry}
               onChange={handleInputChange}
+              min="0"
             />
           </div>
         </div>
 
         <div className="align-center">
-          <button type="submit" className="modal--btn">
+          <button type="submit" className="modal--btn" disabled={isSaving}>
             <i className="far fa-save"></i>
-            Guardar
+            <span>Guardar</span>
             {/* {format ? <span> Editar...</span> : <span> Guardar...</span>} */}
           </button>
         </div>

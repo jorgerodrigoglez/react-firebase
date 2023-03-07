@@ -23,7 +23,7 @@
     display: block;
     width: 600px;
     background-color: $google-blue;
-    padding: 1.5rem;
+    padding: $gutterwidth;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -36,8 +36,8 @@
       font-size: fs(normal);
       font-family: $basefont;
       color: $black;
-      padding: $baselineheight;
-      border-bottom: dashed 2px $black;
+      padding: 2px;
+      border-bottom: dashed 1px $black;
     }
   
     label {
@@ -55,8 +55,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin-top: $baselineheight;
-      padding: $baselineheight;
     }
   
     &--priority,
@@ -123,7 +121,7 @@
       }
     }
     &--description {
-      width: 90%;
+      width: 95%;
       margin-top: 5px;
       padding: $baselineheight;
       font-family: $basefont;
@@ -133,13 +131,11 @@
     }
   
     &--color {
-      height: 30px;
-      width: 100px;
-      position: absolute;
-      top: 0;
-      right: 10px;
+      display: block;
+      width: 100%;
+      position: relative;
+      right: 20px;
       text-align: right;
-      margin-top: $baselineheight;
       padding: $baselineheight;
       font-family: $basefont;
       font-size: fs(small) * 1.1;
@@ -151,6 +147,19 @@
       border-radius: 0;
       border-radius: 12px;
       transition: all 0.25s ease;
+
+      &--select{
+        height: 30px;
+        width: 150px;
+        top: 0;
+        right: 0;
+      }
+
+      label{
+        font-family: $basefont;
+        font-size: fs(small);
+        font-weight: lighter;
+      }
   
       option {
         font-family: $basefont;
@@ -188,14 +197,14 @@
       }
     }
   
-  
     &--btn {
-      margin-top: $gutterwidth * 2;
+      width: 110px;
+      margin-top: $gutterwidth;
       padding: $baselineheight;
       background-color: $compcolor;
       font-family: $basefont;
       text-align: center;
-      padding-left: $gutterwidth;
+      padding-left: 10px;
       font-size: fs(small) * 1.2;
       color: $black;
       opacity: 1;
@@ -211,3 +220,4 @@
       }
     }
   }
+
