@@ -1,3 +1,23 @@
+.dashboard{
+    height: 100vh;
+    background-color: $primary;
+}
+
+.nothing-selected{
+    display: flex;
+    height: 100vh;
+    height: 100vh;
+    justify-content: center;
+    align-content: flex-end;
+    align-items: center;
+    background-color: $primary;
+    
+    p{
+        padding: $gutterwidth;
+        font-family: $basefont;
+        font-size: fs(big);
+    }
+}
 
 .row{
     display: flex;
@@ -6,11 +26,14 @@
     justify-content: space-between;
 }
 
-
 .align-center{
     text-align: center;
 }
 
 .is-invalid{
     background-color: $color-error;
+}
+
+.border-bottom{
+    border-bottom: dashed 1px $black;
 }

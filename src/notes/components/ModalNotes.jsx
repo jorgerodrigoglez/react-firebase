@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Modal from "react-modal";
 
@@ -36,22 +36,25 @@ const initialForm = {
   start: new Date(),
   end: addHours(new Date(), 2),
   color: "#FF8000",
-  //priority: 0,
+  priority: "",
   priorityColor: "#FFF",
   //stateNote: true,
   complete: false,
   spent: 0,
-  entry: 0,
+  entry: 0
 };
 
 export const ModalNotes = () => {
   // componente de NotesPage
   // redux
   // controla el disable del btn del submit del formulario en ModalNotes.jsx
-  const { isSaving } = useSelector(state => state.notes);
+  const { isSaving, activeNote } = useSelector(state => state.notes);
+  //console.log(activeNote);
+  // controla el texto del modal al editar
+  const { formatTextModal } = useSelector(state => state.ui);
   // hook useForm
   // hook valores del formulario
-  const { formValues, setFormValues, handleInputChange } = useForm(initialForm);
+  const { formValues, setFormValues, handleInputChange, priorityText } = useForm(initialForm);
   // hook useUiStore
   // para acciones del UI - abrir o cerrar modal
   const { isOpenModal, closeModal } = useUiStore();
@@ -64,6 +67,8 @@ export const ModalNotes = () => {
   // función para cerrar modal - proviene del hook
   const uiCloseModal = () => {
     closeModal();
+    // borra datos del formulario al pasar del estado de edición al de nueva nota
+    setFormValues(initialForm);
   };
 
   // funcion del datepicker para cambiar valores del end y start
@@ -80,6 +85,14 @@ export const ModalNotes = () => {
     if (!formSubmitted) return "";
     return formValues.category.length > 0 ? "" : "is-invalid";
   }, [formValues.category, formSubmitted]);
+
+  
+  // Carga los datos del formulario para su edicion
+  useEffect(() => {
+    if (activeNote !== null) {
+      setFormValues(activeNote);
+    }
+  },[activeNote]);
 
   // submit del formulario
   const onSubmit = async event => {
@@ -101,6 +114,8 @@ export const ModalNotes = () => {
     if (formValues.category.length <= 0) return;
 
     // impresión valores del formulario
+    // asigna el texto de la prioridad al objeto formValues antes de realizar el guardado cuando la nota no esta activa
+    formValues.priority = priorityText;
     //console.log({ formValues });
     // guardado del datos de formulario
     await startSavingNote(formValues);
@@ -122,7 +137,9 @@ export const ModalNotes = () => {
       closeTimeoutMS={200}
     >
       <form className="modal--form" onSubmit={onSubmit}>
-        <h1>Añadir nota</h1>
+        {/* ver Note.jsx - onEditNote() */}
+        {formatTextModal ? <h1> Editar nota...</h1> : <h1> Nueva nota...</h1>}
+
         <div className="modal--color">
           <label>Color de nota:</label>
           <select
@@ -299,8 +316,11 @@ export const ModalNotes = () => {
         <div className="align-center">
           <button type="submit" className="modal--btn" disabled={isSaving}>
             <i className="far fa-save"></i>
-            <span>Guardar</span>
-            {/* {format ? <span> Editar...</span> : <span> Guardar...</span>} */}
+            {formatTextModal ? (
+              <span> Editar...</span>
+            ) : (
+              <span> Guardar...</span>
+            )}
           </button>
         </div>
       </form>

@@ -1,0 +1,16 @@
+.btn-plus {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: $compcolor;
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  box-shadow: 2px 2px 5px $compcolor;
+
+  i {
+    font-size: fs(huge);
+    font-weight: bold;
+    color: $black;
+  }
+}

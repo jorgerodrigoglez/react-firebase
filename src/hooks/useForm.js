@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { priorities } from "../helpers";
 
 export const useForm = (initialState = {}, formValidations = {}) => {
   const [formValues, setFormValues] = useState(initialState);
@@ -13,10 +14,10 @@ export const useForm = (initialState = {}, formValidations = {}) => {
   // cogemos los valores de formValuesValidation
   const isFormValid = useMemo(() => {
     for (const formValue of Object.keys(formValuesValidation)) {
-      if(formValuesValidation[formValue] !== null ) return false;
+      if (formValuesValidation[formValue] !== null) return false;
     }
     return true;
-  },[formValues]);
+  }, [formValues]);
 
   const handleInputChange = ({ target }) => {
     setFormValues({
@@ -25,9 +26,17 @@ export const useForm = (initialState = {}, formValidations = {}) => {
     });
   };
 
-  const resetForm = () => {
+  // helper priorities
+  // añadir el texto de la prioridad al formValues ya que en select solo se puede añadir una a los valores del formulario
+  // este valor se asigna al initialForm en el submmit del formulario para poderlo guardarlo
+  const priorityText = useMemo(() => {
+    return priorities(formValues.priorityColor);
+  }, [formValues]);
+  //console.log(priorityText);
+  
+  /*const resetForm = () => {
     setValues(initialState);
-  };
+  };*/
 
   // validaciones del formulario
   const createValidations = () => {
@@ -56,6 +65,7 @@ export const useForm = (initialState = {}, formValidations = {}) => {
     setFormValues,
     handleInputChange,
     ...formValuesValidation,
-    isFormValid
+    isFormValid,
+    priorityText
   };
 };

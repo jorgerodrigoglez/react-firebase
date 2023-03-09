@@ -4,16 +4,18 @@ import { Link } from "react-router-dom";
 import { useForm } from "../../hooks";
 import { startLoginWithEmailPassword } from "../../store/auth";
 
+const formData = {
+  email: "jrg@gmail.com",
+  password: "123456"
+}
+
 export const LoginPage = () => {
   // redux
   const { status, errorMessage } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   // hook valores del formulario
-  const { email, password, handleInputChange } = useForm({
-    email: "",
-    password: ""
-  });
+  const { email, password, handleInputChange } = useForm(formData);
 
   // memorizar y evaluar el status para desabilitar los botones cuando el status sea igual a 'checking'
   // la función devuelve un true o un false

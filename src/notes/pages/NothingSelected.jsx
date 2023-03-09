@@ -1,7 +1,7 @@
 export const NothingSelected = () => {
     return (
         <div className="nothing-selected">
-            **No hay nada seleccionado
+            <p>No hay nada que mostrar...</p>
         </div>
     )
 }

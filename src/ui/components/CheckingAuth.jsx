@@ -1,8 +1,7 @@
 
-
 export const CheckingAuth = () => {
     return (
-        <div>
+        <div className="loading">
             <h3>Cargando...</h3>
         </div>
     )

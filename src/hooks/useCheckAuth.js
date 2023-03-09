@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "@firebase/auth";
 
 import { FirebaseAuth } from "../firebase/config";
 import { logout, login } from "../store/auth";
-import { loadingNotes } from "../store/notes";
+import { loadingNotesDDBB } from "../store/notes";
 
 export const useCheckAuth = () => {
   // redux
@@ -21,7 +21,7 @@ export const useCheckAuth = () => {
       const { uid, email, displayName } = user;
       dispatch(login({ uid, email, displayName }));
       // store/notes/thunks - loadingNotes - trae las notas guardadas en la BBDD
-      dispatch( loadingNotes() );
+      dispatch( loadingNotesDDBB() );
     });
   }, []);
 

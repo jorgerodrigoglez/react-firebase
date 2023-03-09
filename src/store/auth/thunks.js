@@ -1,6 +1,7 @@
 import { checkingCredentials } from "./";
 import { registerUserWidthEmailPassword, loginWithEmailPassword, logoutFirebase } from "../../firebase/providers";
 import { logout, login } from "./authSlice";
+import { clearNotesLogout } from "../notes";
 
 // cambia la autenticación
 export const checkingAuthentication = ( email, password ) => {
@@ -48,6 +49,8 @@ export const startLoginWithEmailPassword = ({ email, password }) => {
 export const startLogout = () => {
     return async( dispatch ) => {
         await logoutFirebase();
+        // de store/notes/notesSlice
+        dispatch(clearNotesLogout());
         dispatch( logout() );
     }
 }
