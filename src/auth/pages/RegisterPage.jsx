@@ -58,9 +58,15 @@ export const RegisterPage = () => {
 
   return (
     <div className="auth">
-      <form className="auth__form animate__animated animate__fadeIn animate__faster" onSubmit={onSubmit}>
+      <form
+        className="auth__form animate__animated animate__fadeIn animate__faster"
+        onSubmit={onSubmit}
+      >
         <h3 className="auth__title">Register:</h3>
 
+        {!!displayNameValid && formSubmitted && (
+          <p className="error__message">{displayNameValid}</p>
+        )}
         <input
           type="text"
           placeholder="Nombre"
@@ -69,8 +75,10 @@ export const RegisterPage = () => {
           value={displayName}
           onChange={handleInputChange}
         />
-        {!!displayNameValid && formSubmitted && <p className="error__message">{displayNameValid}</p>}
 
+        {!!emailValid && formSubmitted && (
+          <p className="error__message">{emailValid}</p>
+        )}
         <input
           type="text"
           placeholder="Email"
@@ -80,8 +88,10 @@ export const RegisterPage = () => {
           value={email}
           onChange={handleInputChange}
         />
-        {!!emailValid && formSubmitted && <p className="error__message">{emailValid}</p>}
 
+        {!!passwordValid && formSubmitted && (
+          <p className="error__message">{passwordValid}</p>
+        )}
         <input
           type="password"
           placeholder="Password"
@@ -90,10 +100,11 @@ export const RegisterPage = () => {
           value={password}
           onChange={handleInputChange}
         />
-        {!!passwordValid && formSubmitted && <p className="error__message">{passwordValid}</p>}
 
         {/* Muestra el error de firebase */}
-        <p className="error__message__firebase">{!!errorMessage && errorMessage}</p>
+        <p className="error__message__firebase">
+          {!!errorMessage && errorMessage}
+        </p>
 
         <button type="submit" className="auth__btn" disabled={isAuthenticating}>
           Register

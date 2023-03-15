@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { priorities } from "../helpers";
+import { prioritiesTextValues, prioritiesOrder } from "../helpers";
 
 export const useForm = (initialState = {}, formValidations = {}) => {
   const [formValues, setFormValues] = useState(initialState);
@@ -26,14 +26,22 @@ export const useForm = (initialState = {}, formValidations = {}) => {
     });
   };
 
-  // helper priorities
+  // helper prioritiesTextValues
   // añadir el texto de la prioridad al formValues ya que en select solo se puede añadir una a los valores del formulario
   // este valor se asigna al initialForm en el submmit del formulario para poderlo guardarlo
   const priorityText = useMemo(() => {
-    return priorities(formValues.priorityColor);
+    return prioritiesTextValues(formValues.priorityColor);
   }, [formValues]);
   //console.log(priorityText);
-  
+
+  // helper prioritiesOrder
+  // añadir un orden la prioridad al formValues ya que en select solo se puede añadir una a los valores del formulario
+  // este valor se asigna al initialForm y se envía en un evento del boton prioritiesBtn en MenuCategories.jsx
+  const priorityOrder = useMemo(() => {
+    return prioritiesOrder(formValues.priorityColor);
+  }, [formValues]);
+  //console.log(priorityOrder);
+
   /*const resetForm = () => {
     setValues(initialState);
   };*/
@@ -66,6 +74,7 @@ export const useForm = (initialState = {}, formValidations = {}) => {
     handleInputChange,
     ...formValuesValidation,
     isFormValid,
-    priorityText
+    priorityText,
+    priorityOrder
   };
 };

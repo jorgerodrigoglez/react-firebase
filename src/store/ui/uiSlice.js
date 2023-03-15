@@ -4,7 +4,7 @@ export const uiSlice = createSlice({
   name: "ui",
   initialState: {
     isOpenModal: false,
-    formatTextModal: false
+    screenEditModal: false
   },
   reducers: {
     // Redux Toolkit allows us to write "mutating" logic in reducers. It
@@ -13,14 +13,13 @@ export const uiSlice = createSlice({
     // immutable state based off those changes
     onOpenModal: state => {
       state.isOpenModal = true;
-      state.formatTextModal = false;
+      state.screenEditModal = false;
     },
     onCloseModal: state => {
       state.isOpenModal = false;
-      //state.format = false;
     },
-    onEditFormatTextModal: (state) => {
-      state.formatTextModal = true;
+    onEditElementsModal: state => {
+      state.screenEditModal = true;
     }
   }
 });
@@ -29,5 +28,6 @@ export const uiSlice = createSlice({
 export const {
   onOpenModal,
   onCloseModal,
-  onEditFormatTextModal
+  onEditElementsModal,
+  onDisabledInputsEdit
 } = uiSlice.actions;

@@ -1,5 +1,5 @@
 .note {
-  height: 100%;
+  height: auto;
   width: 100vw;
   background-color: $primary;
   padding: $gutterwidth;
@@ -19,16 +19,16 @@
       width: auto;
       padding: $baselineheight;
       background-color: transparent;
-     
+      cursor: pointer;
 
-      &--complete{
-        border-top: solid 3px $black;
+      &--complete {
+        background-color: transparent;
       }
 
       span {
         display: inline-block;
         vertical-align: middle;
-        width: 70%;
+        width: 60%;
         padding: $baselineheight;
         text-align: left;
         font-family: $altfont;
@@ -39,11 +39,10 @@
       i {
         display: inline-block;
         vertical-align: middle;
-        width: 10%;
+        width: 5%;
         padding: $baselineheight;
         font-size: fs(big);
         background-color: $primary;
-        cursor: pointer;
       }
     }
 
@@ -52,9 +51,8 @@
       font-size: fs(normal);
       color: $black;
       text-align: center;
-      //background-color: $compcolor;
-      border-bottom: solid 4px $primary;
-      padding: $baselineheight;
+      border-bottom: solid 8px $primary;
+      padding: $baselineheight * 1.1;
     }
 
     &__description {
@@ -90,18 +88,29 @@
     }
 
     &__priority {
-      margin-top: $baselineheight;
-      padding: $baselineheight;
-      padding-left: $baselineheight * 2;
-      font-family: $altfont;
-      color: $black;
-      font-size: fs(small);
-      background-color: $compcolor;
-      //border: solid 1px $black;
+      margin-top: $gutterwidth;
+      margin-bottom: $gutterwidth;
+      text-align: left;
+      
+      
+      p {
+        width: 140px;
+        padding: $baselineheight;
+        margin-left: $gutterwidth;
+        font-family: $basefont;
+        color: $black;
+        font-size: fs(small);
+        font-weight: lighter;
+        border-radius: 10px;
 
-      span {
-        font-weight: bold;
+        span {
+          font-family: $basefont;
+          color: $black;
+          font-size: fs(small);
+          font-weight: bold;
+        }
       }
+
     }
 
     &__date {
@@ -110,6 +119,8 @@
       font-family: $altfont;
       font-size: fs(small);
       color: $black;
+      background-color: transparent;
+      opacity: 0.5;
 
       &--start,
       &--end {
@@ -117,8 +128,8 @@
         margin-bottom: $baselineheight;
         font-family: $basefont;
         font-size: fs(x-small) * 1.1;
-        font-weight: lighter;
-        border-top: dashed 1px $black;
+        font-weight: bold;
+        border: solid 1px $grey;
 
         span {
           font-weight: lighter;
@@ -128,24 +139,25 @@
 
     &__count {
       @extend %center;
-      padding: $baselineheight;
       display: flex;
-      justify-content: space-around;
-      width: 95%;
+      justify-content: flex-end;
+      margin-right: 7px;
       &--spent,
       &--entry {
-        width: 25%;
+        margin-left: 2px;
+        margin-right: 2px;
+        margin-bottom: $baselineheight;
         padding: $baselineheight;
-        font-family: $altfont;
+        font-family: $basefont;
         font-size: fs(x-small);
-        border: dotted 1px $black;
+        background-color: $primary;
       }
-      &--total {
-        padding: $baselineheight;
-        font-family: $altfont;
-        font-size: fs(x-small);
-        font-weight: bold;
-      }
+      // &--total {
+      //   padding: $baselineheight;
+      //   font-family: $altfont;
+      //   font-size: fs(x-small);
+      //   font-weight: bold;
+      // }
     }
 
     &__delete {

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 import Modal from "react-modal";
 
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -8,11 +9,10 @@ import { differenceInSeconds, addHours } from "date-fns";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
 
-import Swall from "sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
-
+import { onStablishCategories } from "../../store/notes";
 import { useForm, useUiStore, useNotesStore } from "../../hooks";
-import { colors, colorsPriority } from "../../ui";
+import { deleteCategoriesRepeated } from "../../helpers";
+import { colors, colorsPriority } from "../../ui"; // data de los select
 
 // Estilos del modal
 const customStyles = {
@@ -31,44 +31,74 @@ Modal.setAppElement("#root");
 // valores iniciales del formulario
 const initialForm = {
   category: "",
+  color: "#FF8000",
   task: "",
   description: "",
   start: new Date(),
-  end: addHours(new Date(), 2),
-  color: "#FF8000",
+  end: addHours(new Date(), 1),
   priority: "",
   priorityColor: "#FFF",
-  //stateNote: true,
+  orderPriority: 0,
+  stateNote: false,
   complete: false,
   spent: 0,
   entry: 0
 };
 
+// realizar las validaciones
+const formValidations = {
+  category: [value => value.length >= 1, "La categoria es obligatoria"]
+};
+
 export const ModalNotes = () => {
-  // componente de NotesPage
+  // componente de NotesPage.jsx
   // redux
-  // controla el disable del btn del submit del formulario en ModalNotes.jsx
+  const dispatch = useDispatch();
+  // isSaving:controla el disable del btn del submit del formulario
+  // activeNote: devuelve las propiedades de una nota concreta
   const { isSaving, activeNote } = useSelector(state => state.notes);
+  //console.log(!!activeNote);
   //console.log(activeNote);
   // controla el texto del modal al editar
-  const { formatTextModal } = useSelector(state => state.ui);
+  const { screenEditModal } = useSelector(state => state.ui);
   // hook useForm
   // hook valores del formulario
-  const { formValues, setFormValues, handleInputChange, priorityText } = useForm(initialForm);
+  const {
+    formValues,
+    setFormValues,
+    handleInputChange,
+    priorityText,
+    priorityOrder,
+    categoryValid
+  } = useForm(initialForm, formValidations);
   // hook useUiStore
   // para acciones del UI - abrir o cerrar modal
   const { isOpenModal, closeModal } = useUiStore();
   // hook useNotesStore
   // para acciones de store de notas - guardar nueva nota - notesSlice.js
-  const { startSavingNote } = useNotesStore();
+  const { startSavingNote, notes, categories } = useNotesStore();
   // comprueba si el submit del formulario se ha realizad
   const [formSubmitted, setFormSubmitted] = useState(false);
+  // bloquea los botones cuando éstos no interesa que sean manipulados por el usuario
+  // cuando selecciona una categoria o crea una categoria nueva bloquea o no el input de color
+  // cuando edita no interesa que manipule el select de seleccion de categoria
+  const [disabledInputColor, setDisabledInputColor] = useState(false);
+  // mensaje para el error de fechas
+  const [errorDates, setErrorDates] = useState(false);
+  const [errorDatesMessage, setErrorDatesMessage] = useState("");
+  //console.log({ errorDates, errorDatesMessage });
 
   // función para cerrar modal - proviene del hook
   const uiCloseModal = () => {
     closeModal();
     // borra datos del formulario al pasar del estado de edición al de nueva nota
-    setFormValues(initialForm);
+    setErrorDates(false);
+    setErrorDatesMessage("");
+    // desbloque el input de color - si el usuario a seleccionado una categoría mediante el select
+    // al cerrar no elimina la categoría seleccionada en el select por ello hay que indicar que la borre
+    setFormValues({ ...initialForm, category: "" });
+    // cambio de estado del mensaje de error de las fechas
+    setDisabledInputColor(false);
   };
 
   // funcion del datepicker para cambiar valores del end y start
@@ -81,41 +111,82 @@ export const ModalNotes = () => {
 
   // cambio de clase CSS en caso de que la validación de la categoria no sea correct
   // crear estilos css en archivo scss correspondiente
-  const errorClass = useMemo(() => {
+  let errorClass = useMemo(() => {
     if (!formSubmitted) return "";
     return formValues.category.length > 0 ? "" : "is-invalid";
   }, [formValues.category, formSubmitted]);
 
-  
+  // helper devuelve las categorias no repetidas de las notas
+  const categoriesNoRepeated = deleteCategoriesRepeated(notes);
+
   // Carga los datos del formulario para su edicion
   useEffect(() => {
     if (activeNote !== null) {
       setFormValues(activeNote);
     }
-  },[activeNote]);
+  }, [activeNote]);
+
+  // introduce las categorias, eliminadas las repetidas, en el store de notes
+  useEffect(() => {
+    dispatch(onStablishCategories(categoriesNoRepeated));
+  }, [notes]);
+
+  // validacion de fechas del datepicker
+  useEffect(() => {
+    // calcula la direrencia en seg entre fechas
+    const difference = differenceInSeconds(formValues.end, formValues.start);
+    // condiciones para mostrar el error de fechas
+    // console.log(difference);
+    if (isNaN(difference) || difference <= 0) {
+      setErrorDates(true);
+      setErrorDatesMessage("Las fechas NO son correctas");
+    } else {
+      setErrorDates(false);
+      setErrorDatesMessage("");
+    }
+  }, [formValues.start, formValues.end]);
+
+  // cambia el color del select color al seleccionar las categorias en el select de categorias
+  const changeColorSelectingCategory = ({ target }) => {
+    //setSelectCategory(target.value);
+    let selectText = target.value;
+    formValues.category = selectText;
+    // bloque el input que selecciona el color de la categoria seleccionada
+    setDisabledInputColor(true);
+
+    notes.map(note => {
+      if (selectText === note.category) {
+        const changeColor = note.color;
+        setFormValues({ ...formValues, color: changeColor });
+      }
+    });
+  };
+
+  // limpia el input de categorias, por si se selecciono una categoria
+  const resetInput = event => {
+    event.preventDefault();
+    // para borrar el input de la categoria
+    setFormValues({ ...formValues, category: "" });
+    // desbloque el input de color - si el usuario a seleccionado una categoría mediante el select
+    setDisabledInputColor(false);
+  };
 
   // submit del formulario
   const onSubmit = async event => {
     event.preventDefault();
     setFormSubmitted(true);
-    // validacion de fechas
-    const difference = differenceInSeconds(formValues.end, formValues.start);
-    //
-    if (isNaN(difference) || difference <= 0) {
-      //console.log("Las fechas no son correctas");
-      Swall.fire(
-        "Las fechas no son correctas",
-        "Revisa las fechas ingresadas",
-        "error"
-      );
-      return;
-    }
+
     // validacion obligatoria del campo de la categoria
     if (formValues.category.length <= 0) return;
+    // calcula la direrencia en seg entre fechas - ver useEffect para la validacion de fechas
+    const difference = differenceInSeconds(formValues.end, formValues.start);
+    if (difference <= 0) return;
 
     // impresión valores del formulario
     // asigna el texto de la prioridad al objeto formValues antes de realizar el guardado cuando la nota no esta activa
     formValues.priority = priorityText;
+    // asigna el orden de la prioridad al objeto formValues antes de realizar el guardado cuando la nota no esta activa
+    formValues.priorityOrder = priorityOrder;
     //console.log({ formValues });
     // guardado del datos de formulario
     await startSavingNote(formValues);
@@ -135,78 +206,88 @@ export const ModalNotes = () => {
       style={customStyles}
       className="modal"
       closeTimeoutMS={200}
+      
     >
       <form className="modal--form" onSubmit={onSubmit}>
         {/* ver Note.jsx - onEditNote() */}
-        {formatTextModal ? <h1> Editar nota...</h1> : <h1> Nueva nota...</h1>}
+        {screenEditModal ? <h1> Editar nota...</h1> : <h1> Nueva nota...</h1>}
 
         <div className="modal--color">
-          <label>Color de nota:</label>
-          <select
-            name="color"
-            className="modal--color--select"
-            onChange={handleInputChange}
-            value={formValues.color}
-            style={{ backgroundColor: formValues.color }}
-            //disabled={checkInputColor ? "disabled" : null}
-          >
-            <option>Selecciona color</option>
-            {colors.map(col => (
-              <option key={col.id} value={col.color}>
-                {col.name}
-              </option>
-            ))}
-          </select>
+          {!screenEditModal && (
+            <>
+              <label>Color de nota:</label>
+              <select
+                name="color"
+                className="modal--color--select"
+                onChange={handleInputChange}
+                value={formValues.color}
+                style={{ backgroundColor: formValues.color }}
+                disabled={disabledInputColor}
+              >
+                <option>Selecciona color</option>
+                {colors.map(color => (
+                  <option key={uuidv4()} value={color.color}>
+                    {color.name}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
 
         <div className="row">
           <div className="modal--category">
-            {/* <label>Proyecto:{formValues.category}</label> */}
-            <label>Categoría:</label>
+            <label>
+              {!formValues.category
+                ? "Crear categoría:"
+                : "Categoría seleccionada:"}
+            </label>
             <input
               type="text"
               className={`modal--category-input ${errorClass}`}
-              placeholder="Categoría"
+              placeholder=""
               name="category"
               autoComplete="off"
               value={formValues.category}
               onChange={handleInputChange}
-              //disabled={checkInputColor ? "disabled" : null}
             />
-            <div>
+            {!!categoryValid && formSubmitted && (
+              <p className="error__message">{categoryValid}</p>
+            )}
+
+            {!screenEditModal && (
               <button
                 id="idCheck"
                 className="modal--category-checkbox"
-                //onClick={changeChecking}
-                //style={{ display: checkInputColor ? "" : "none" }}
+                onClick={resetInput}
               >
-                {/* {!format ? (
-                  <span> Nuevo Proyecto</span>
-                ) : (
-                  <span> Desbloquear</span>
-                )} */}
+                Reset
               </button>
-            </div>
+            )}
           </div>
           <div
             className="modal--category"
-            //onChange={changeInputOpt}
+            onChange={changeColorSelectingCategory}
           >
-            <label>Select project</label>
-            <select
-              name="category"
-              className="modal--category-select"
-              onChange={handleInputChange}
-              value={formValues.category}
-            >
-              <option>Select project</option>
-              {/* {categories &&
-                categories.map(cat => (
-                  <option key={uuidv4()} value={cat}>
-                    {cat}
-                  </option>
-                ))} */}
-            </select>
+            {!screenEditModal && (
+              <>
+                <label>Mis categorías:</label>
+                <select
+                  name="category"
+                  className="modal--category-select"
+                  onChange={handleInputChange}
+                  value={formValues.category}
+                >
+                  <option>Categorias</option>
+                  {categories &&
+                    categories.map(category => (
+                      <option key={uuidv4()} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                </select>
+              </>
+            )}
           </div>
         </div>
 
@@ -234,7 +315,7 @@ export const ModalNotes = () => {
             >
               <option>--Selecciona--</option>
               {colorsPriority.map(opt => (
-                <option key={opt.id} value={opt.color}>
+                <option key={uuidv4()} value={opt.color}>
                   {opt.text}
                 </option>
               ))}
@@ -242,7 +323,7 @@ export const ModalNotes = () => {
           </div>
         </div>
 
-        <div className="modal__window--notes">
+        <div>
           <label>Descripcion:</label>
           <textarea
             type="text"
@@ -254,36 +335,39 @@ export const ModalNotes = () => {
             onChange={handleInputChange}
           ></textarea>
         </div>
+        <>
+          <div className="row">
+            <div className="modal--date-picker">
+              <label>Inicio:</label>
+              <DatePicker
+                selected={formValues.start}
+                className="modal--date-picker-input"
+                onChange={event => onDateChange(event, "start")}
+                dateFormat="Pp"
+                showTimeSelect
+                locale="es"
+                timeCaption="Hora"
+              />
+            </div>
 
-        <div className="row">
-          <div className="modal--date-picker">
-            <label>Inicio:</label>
-            <DatePicker
-              selected={formValues.start}
-              className="modal--date-picker-input"
-              onChange={event => onDateChange(event, "start")}
-              dateFormat="Pp"
-              showTimeSelect
-              locale="es"
-              timeCaption="Hora"
-            />
+            <div className="modal--date-picker">
+              <label>Fin:</label>
+              <DatePicker
+                minDate={formValues.start}
+                selected={formValues.end}
+                className="modal--date-picker-input"
+                onChange={event => onDateChange(event, "end")}
+                dateFormat="Pp"
+                showTimeSelect
+                locale="es"
+                timeCaption="Hora"
+              />
+            </div>
           </div>
-
-          <div className="modal--date-picker">
-            <label>Fin:</label>
-            <DatePicker
-              minDate={formValues.start}
-              selected={formValues.end}
-              className="modal--date-picker-input"
-              onChange={event => onDateChange(event, "end")}
-              dateFormat="Pp"
-              showTimeSelect
-              locale="es"
-              timeCaption="Hora"
-            />
-          </div>
-        </div>
-
+          {errorDates && (
+            <p className="modal--date-picker--error">{errorDatesMessage}</p>
+          )}
+        </>
         <div className="row">
           <div className="modal--count">
             <span className="modal--count--label">Gasto:</span>
@@ -316,7 +400,7 @@ export const ModalNotes = () => {
         <div className="align-center">
           <button type="submit" className="modal--btn" disabled={isSaving}>
             <i className="far fa-save"></i>
-            {formatTextModal ? (
+            {screenEditModal ? (
               <span> Editar...</span>
             ) : (
               <span> Guardar...</span>

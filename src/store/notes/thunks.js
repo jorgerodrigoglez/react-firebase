@@ -1,4 +1,10 @@
-import { doc, collection, setDoc, deleteDoc } from "firebase/firestore/lite";
+import {
+  doc,
+  collection,
+  setDoc,
+  deleteDoc,
+  updateDoc
+} from "firebase/firestore/lite";
 import { FirebaseDB } from "../../firebase/config";
 import { onAddNewNote } from "./";
 import {
@@ -7,9 +13,10 @@ import {
   setSaving,
   updateNote,
   deleteNoteById,
-  onChangeStateTask
+  onChangeStateTask,
+  onFilterCategories
 } from "./notesSlice";
-import { loadNotes } from "../../helpers";
+import { loadNotes, formatDates, loadNotesByCategory } from "../../helpers";
 
 // graba las notas de DDBB y las añade al store.notes
 // useNotesStore.js
@@ -17,12 +24,15 @@ export const newNoteDDBB = newNote => {
   return async (dispatch, getState) => {
     // envia datos del formulario a la BBDD y modifica el store(initialState) mediante el reducer onAddNewNote
     // console.log('Creando nueva nota');
-    //console.log({newNote});
-    //console.log(getState());
-    // controla el disable del btn del submit del formulario en ModalNotes.jsx
-    dispatch(isSavingNewNote());
+    // console.log({ newNote });
+
     // uid del usuario logeado
     const { uid } = getState().auth;
+    // console.log(getState());
+    // controla el disable del btn del submit del formulario en ModalNotes.jsx
+    dispatch(isSavingNewNote());
+
+    // guarda la nota completa
     const newDoc = doc(collection(FirebaseDB, `${uid}/dashboard/notes`));
     await setDoc(newDoc, newNote);
     //console.log({newDoc});
@@ -39,27 +49,25 @@ export const loadingNotesDDBB = () => {
   return async (dispatch, getState) => {
     // uid del usuario logeado
     const { uid } = getState().auth;
-    //console.log({uid});
+    // uid del usuario
     if (!uid) throw new Error("El uid del usuario no existe");
-    // funcion en helpers/loadNotes.js - trae los documentos de la DDBB
+
+    // ----------------------- Trae las categorias de las notas DDBB ---------------------
+
+    const notesCategoriesDB = await loadNotesByCategory(uid);
+    // guarda las notas guardadas en DDBB en el store de notas
+    // helper para el formato de fechas
+    const formatDatesCatDB = formatDates(notesCategoriesDB);
+    dispatch(setNotes(formatDatesCatDB));
+
+    // ----------------------- Trae todas las notas DDBB ---------------------
     const notesDB = await loadNotes(uid);
     //console.log(notesDB);
     // hay que cambiar el formato de fechas devuelto a firebase por el formato de fechas compatible con el datepicker, para que no de error al realizar la edición de las fechas y el datepicker las pueda leer
-    notesDB.map(noteDB => {
-      // modificacion del formato de fecha del start y end
-      const fireBaseTimeStart = new Date(
-        noteDB.start.seconds * 1000 + noteDB.start.nanoseconds / 1000000
-      );
-      const fireBaseTimeEnd = new Date(
-        noteDB.end.seconds * 1000 + noteDB.end.nanoseconds / 1000000
-      );
-      //console.log(fireBaseTimeStart,fireBaseEnd);
-      noteDB.start = fireBaseTimeStart;
-      noteDB.end = fireBaseTimeEnd;
-    });
-    //console.log(notesDB);
-    // guarda las notas guardadas en DDBB en el store
-    dispatch(setNotes(notesDB));
+    // helper para el formato de fechas
+    const formatDatesDB = formatDates(notesDB);
+    // guarda las notas guardadas en DDBB en el store de notas
+    dispatch(setNotes(formatDatesDB));
   };
 };
 
@@ -67,11 +75,52 @@ export const loadingNotesDDBB = () => {
 // useNotesStore.js
 export const editNoteDDBB = editNote => {
   return async (dispatch, getState) => {
-    //console.log(editNote);
     // controla la edicion de la nota,mientras se guarda
     dispatch(setSaving());
     // uid del usuario logeado
     const { uid } = getState().auth;
+    // --------------------------------------------------------------------------------------------------------------------
+    // IDENTIFICA TODAS LAS CATEGORIAS QUE HAY QUE MODIFICAR Y QUE SON IGUALES A LA QUE SE HA REALIZADO LA EDICIÓN
+    const { notes } = getState().notes;
+
+    // categoria editada
+    const newCategory = editNote.category;
+    // color de la nota a editar que no cambia nunca ya que no se puede editar
+    const newColor = editNote.color;
+    // consigue la categoria antes de su edicion
+    // comparamos 2 propiedades que siempre son iguales
+    let preCategory = "";
+    notes.map(note => {
+      if (note.color === newColor) {
+        preCategory = note.category;
+      }
+    });
+    //console.log(preCategory);
+    // consigue un array con el numero de objetos de la categoria a editar antes de edicion
+    let newPreNotes = [];
+    notes.filter(note => {
+      if (preCategory === note.category) {
+        const preNotes = note;
+        newPreNotes.push(preNotes);
+      }
+    });
+    //console.log({ newPreNotes });
+    // edita la categoria de las notas que van a ser enviadas a DDBB
+    newPreNotes.map(async note => {
+      let noteEdit = { ...note, category: newCategory };
+      // inserción de datos en firebase
+      const noteToFireStore = { ...noteEdit };
+      delete noteToFireStore.id;
+      // identifica y modifica
+      const docRef = doc(FirebaseDB, `${uid}/dashboard/notes/${noteEdit.id}`);
+      await updateDoc(docRef, { category: noteEdit.category }, { merge: true });
+      // modifica el store de notas
+      dispatch(updateNote(noteEdit));
+    });
+
+    // --------------------------------------------------------------------------------------------------------------------
+    // EDICIÓN NORMAL POR ID
+
     // elimina el id de activeNote
     const noteToFireStore = { ...editNote };
     delete noteToFireStore.id;
@@ -84,7 +133,7 @@ export const editNoteDDBB = editNote => {
 };
 
 // elimina la nota en DDBB
-export const startDeletingNoteDDBB = id => {
+export const deletingNoteDDBB = id => {
   return async (dispatch, getState) => {
     // uid del usuario logeado
     const { uid } = getState().auth;
@@ -102,10 +151,38 @@ export const changeCompleteTask = (id, stateTask = {}) => {
   return async (dispatch, getState) => {
     // uid del usuario logeado
     const { uid } = getState().auth;
+    // elimina el id de activeNote
+    const noteToFireStore = { ...stateTask };
+    delete noteToFireStore.id;
     //console.log({ uid, id, stateTask });
     const docRef = doc(FirebaseDB, `${uid}/dashboard/notes/${id}`);
-    await setDoc(docRef, stateTask, { merge: true });
+    await setDoc(docRef, noteToFireStore, { merge: true });
     // cambia el estado de la nota en el store
     dispatch(onChangeStateTask(stateTask));
+  };
+};
+
+// cambia el state de la nota de visible a no visible
+// no se modifica DDBB, solo en el frontend
+export const changeStateNote = ( categoryName = '') => {
+  return async (dispatch, getState) => {
+    // uid del usuario logeado
+    //const { uid } = getState().auth;
+    const { notes } = getState().notes;
+
+    // recorremos la notas, para cambiar su estado
+    notes.map( async note => {
+      if(categoryName === note.category){
+        let stateNote = note.stateNote;
+        //console.log(stateNote);
+        stateNote = true;
+        // por si quiere cambiarse esta propiedad en DDBB - en este caso no es necesario
+        //const docRef = doc(FirebaseDB, `${uid}/dashboard/notes/${note.id}`);
+        //await updateDoc(docRef, { stateNote: stateNote }, { merge: true });
+        // cambia el estado de la nota en el store
+        dispatch(onFilterCategories(categoryName));
+      }
+    });
+
   };
 };

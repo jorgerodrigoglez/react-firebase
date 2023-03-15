@@ -1,6 +1,6 @@
 import { colorsPriority } from "../ui";
 
-export const priorities = formValuesPriorityColor => {
+export const prioritiesTextValues = formValuesPriorityColor => {
   // devuelve el texto que corresponde con el color asignado a la prioridad
   let textPriority = "";
 

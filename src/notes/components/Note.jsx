@@ -1,13 +1,9 @@
 import { useMemo } from "react";
 import { useDispatch } from "react-redux";
-import {
-  onSetActiveNote,
-  startDeletingNoteDDBB,
-  changeCompleteTask
-} from "../../store/notes";
-import { useUiStore } from "../../hooks";
+import { onSetActiveNote, changeCompleteTask } from "../../store/notes";
+import { useUiStore, useNotesStore } from "../../hooks";
 //import { formatDates } from "../../helpers";
-import { onEditFormatTextModal } from "../../store/ui";
+import { onEditElementsModal } from "../../store/ui";
 
 export const Note = ({
   note,
@@ -22,14 +18,15 @@ export const Note = ({
   complete,
   color,
   entry,
-  spent
+  spent,
+  stateNote
 }) => {
-  //console.log({ category, task, description, start, end, color, entry, spent });
+  //console.log({ id, category, task, description, start, end, color, entry, spent });
+  //console.log({id});
   //console.log({start,end});
 
   // redux
   const dispatch = useDispatch();
-
   // cambia el formato de fecha a un string para poder ser leido
   // se utiliza un useMemo para que se memorice el dato, si este no cambia
   const dateStart = useMemo(() => {
@@ -39,10 +36,10 @@ export const Note = ({
     return end.toUTCString();
   }, [end]);
 
-  // aqui iba el helper para el formato de fechas
-
   // hook useUiStore - accion para abrir el modal
   const { openModal } = useUiStore();
+  // hook useNotesStore - acciones de store de notas - eliminar nota - notesSlice.js
+  const { startDeletingNote } = useNotesStore();
 
   // activa la nota para ser editada, una vez activa la nota se recoge el valor en el ModalNotes.jsx y mediante un useEffect se muestran en el formulario, aparte utiliza la funcion del onSubmit del formulario, ubicada en useNotesStore para activar el guardado de la nueva nota o su edición
   const onEditNote = () => {
@@ -65,37 +62,41 @@ export const Note = ({
     // abre el modal
     openModal();
     // edita los textos del modal - ver ModalNotes.jsx
-    dispatch(onEditFormatTextModal());
+    dispatch(onEditElementsModal());
   };
 
   // elimina la nota seleccionada
-  const onDeleteNote = () => {
+  const onDeleteNote = async () => {
     // acciona la funciones siguiente en store/notes/thunks
-    dispatch(startDeletingNoteDDBB(id));
+    await startDeletingNote(id);
   };
 
   // cambia el icono de la nota completada o no segun el valor de DDBB
   const onChangeCompleteTask = event => {
     event.preventDefault();
-
+    // cambia el estado de la nota
     const changeStateTask = {
       ...note,
       complete: !complete
     };
-
+    // thunk para enviar el cambio DDBB
     dispatch(changeCompleteTask(id, changeStateTask));
   };
 
   return (
-    <li className="note__item">
+    <div
+      className="note__item animate__animated animate__fadeIn animate__faster"
+      style={{ display: stateNote ? "none" : "" }}
+      key={id}
+    >
       <div className="note__item__check" onClick={onChangeCompleteTask}>
         {complete ? (
-          <div className="note__item__check--complete">
+          <div className="note__item__check--complete border-top-large text-bold">
             <i className="fa-sharp fa-solid fa-check"></i>
             <span>Completada</span>
           </div>
         ) : (
-          <div className="note__item__check--complete">
+          <div className="note__item__check--complete border-top-fine">
             <i className="fa-sharp fa-solid fa-xmark"></i>
             <span>No completada</span>
           </div>
@@ -111,12 +112,9 @@ export const Note = ({
           <p className="note__item__description">{description}</p>
         </div>
 
-        <div
-          className="note__item__priority"
-          style={{ backgroundColor: priorityColor }}
-        >
-          <p>
-            Prioridad:<span>{priority}</span>
+        <div className="note__item__priority">
+          <p style={{ backgroundColor: priorityColor }}>
+            Prioridad: <span> {priority}</span>
           </p>
         </div>
 
@@ -124,7 +122,7 @@ export const Note = ({
           <div className="note__item__date--start">
             <span>From:</span> {dateStart}
           </div>
-          <div className="note__item__date--end border-bottom">
+          <div className="note__item__date--end">
             <span>To:</span> {dateEnd}
           </div>
         </div>
@@ -138,10 +136,10 @@ export const Note = ({
             <span>Ingreso:</span>
             <b>{entry}</b>€
           </div>
-          <div className="note__item__count--total">
+          {/* <div className="note__item__count--total">
             <span>Total:</span>
             <b>{entry - spent}</b>€
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -153,6 +151,6 @@ export const Note = ({
           <i className="fa-sharp fa-solid fa-trash-can"></i>
         </button>
       </div>
-    </li>
+    </div>
   );
 };

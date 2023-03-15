@@ -58,18 +58,3 @@
       }
     }
   }
-
-  .error__message{
-    margin-bottom: $baselineheight;
-    font-family: $altfont;
-    font-size: fs(small) * 1.1;
-    color: $color-error;
-
-    &__firebase{
-      padding: $baselineheight;
-      margin-top: $baselineheight;
-      font-family: $primary;
-      font-size: fs(small) * 1.2;
-      color: $black;
-    }
-  }

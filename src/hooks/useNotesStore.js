@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
-import { onSetActiveNote, newNoteDDBB, editNoteDDBB } from "../store/notes";
+import { onSetActiveNote, newNoteDDBB, editNoteDDBB, deletingNoteDDBB } from "../store/notes";
 
 export const useNotesStore = () => {
   // redux
   const dispatch = useDispatch();
-  const { notes, activeNote } = useSelector(state => state.notes);
+  const { notes, categories, activeNote } = useSelector(state => state.notes);
 
   // activar nota -- este evento es para el calendario
   const setActiveNote = note => {
@@ -22,12 +22,19 @@ export const useNotesStore = () => {
     }
   };
 
+  // Eliminar nota
+  const startDeletingNote = async id => {
+    dispatch(deletingNoteDDBB(id));
+  }
+
   return {
     // state
     notes,
+    categories,
     activeNote,
     // methods
     setActiveNote,
     startSavingNote,
+    startDeletingNote
   };
 };

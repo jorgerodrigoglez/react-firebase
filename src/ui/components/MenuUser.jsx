@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { startLogout } from "../../store/auth";
 
 export const MenuUser = () => {
+  // componente en MainRoutes,jsx
   //redux
   const dispatch = useDispatch();
   // store de auth
