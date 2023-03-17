@@ -4,7 +4,8 @@ import {
   loadingNotesDDBB,
   changeStateNote,
   setToggleCompleteNotes,
-  setToggleCompleteNotesByCategory
+  setToggleCompleteNotesByCategory,
+  notesByOrderPriority,
 } from "../../store/notes";
 import { filterNotesMenuCategories } from "../../helpers";
 
@@ -46,6 +47,7 @@ export const MenuCategories = () => {
       }
     });
     //console.log(currentCategory);
+    // store/notes/thunks
     dispatch(changeStateNote(currentCategory));
   };
 
@@ -75,11 +77,21 @@ export const MenuCategories = () => {
   };
 
   // accion de ordenar por orden de prioridad
-  const prioritiesBtn = (event) => {
+  const prioritiesBtn = event => {
+    // idem que filterByCatigory();
     event.preventDefault();
-
-
-  }
+    const { target } = event;
+    //console.log(target.value);
+    const currentCategory = target.value;
+    // captura el color de la categoria de la nota
+    notes.map(note => {
+      if (note.category === currentCategory) {
+        setSelectColor(note.color);
+      }
+      //console.log(selectColor);
+      dispatch(notesByOrderPriority(selectColor));
+    });
+  };
 
   // llama a loadingNotesDDBB - store/notes/thunks
   const loadingAllNotes = () => {
@@ -115,7 +127,9 @@ export const MenuCategories = () => {
                 </li>
               ))
             ) : (
-              <p className="not-categories">No hay categorías...</p>
+              <p className="not-categories">
+                No hay categorías, empieza añadiendo una nota...
+              </p>
             )}
           </ul>
         </div>

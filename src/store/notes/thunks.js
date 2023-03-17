@@ -14,9 +14,15 @@ import {
   updateNote,
   deleteNoteById,
   onChangeStateTask,
-  onFilterCategories
+  onFilterCategories,
+  setOrderByCategory
 } from "./notesSlice";
-import { loadNotes, formatDates, loadNotesByCategory } from "../../helpers";
+import {
+  loadNotes,
+  formatDates,
+  loadNotesByCategory,
+  loadNotesByPriority
+} from "../../helpers";
 
 // graba las notas de DDBB y las añade al store.notes
 // useNotesStore.js
@@ -164,15 +170,15 @@ export const changeCompleteTask = (id, stateTask = {}) => {
 
 // cambia el state de la nota de visible a no visible
 // no se modifica DDBB, solo en el frontend
-export const changeStateNote = ( categoryName = '') => {
+export const changeStateNote = (categoryName = "") => {
   return async (dispatch, getState) => {
     // uid del usuario logeado
     //const { uid } = getState().auth;
     const { notes } = getState().notes;
 
     // recorremos la notas, para cambiar su estado
-    notes.map( async note => {
-      if(categoryName === note.category){
+    notes.map(async note => {
+      if (categoryName === note.category) {
         let stateNote = note.stateNote;
         //console.log(stateNote);
         stateNote = true;
@@ -183,6 +189,32 @@ export const changeStateNote = ( categoryName = '') => {
         dispatch(onFilterCategories(categoryName));
       }
     });
+  };
+};
 
+// trae todas la notas de DDBB en orden de priorida
+export const notesByOrderPriority = (selectColor = '') => {
+  return async (dispatch, getState) => {
+    //console.log(selectColor);
+    // uid del usuario logeado
+    const { uid } = getState().auth;
+    // uid del usuario
+    if (!uid) throw new Error("El uid del usuario no existe");
+    // respuesta de DDBB - trae las notas ordenadas por orden de prioridad
+    const loadNotesByOrderPriority = await loadNotesByPriority(uid);
+    // console.log(loadNotesByOrderPriority);
+    // hay que cambiar el formato de fechas devuelto a firebase por el formato de fechas compatible con el datepicker, para que no de error al realizar la edición de las fechas y el datepicker las pueda leer
+    // helper para el formato de fechas
+    const formatDatesOrderDB = formatDates(loadNotesByOrderPriority);
+    // si hay color seleccionado no listamos todas las notas por orden de prioridad
+    // si hay color seleccionado listamos las notas de ese color y las ordenamos
+    if(selectColor === ''){
+      //console.log('NO se selecciono color');
+      // guarda las notas guardadas en DDBB en el store de notas
+      dispatch(setNotes(formatDatesOrderDB));
+    }else{
+      //console.log('SI se selecciono color');
+      dispatch(setOrderByCategory());
+    }
   };
 };

@@ -107,7 +107,7 @@ export const notesSlice = createSlice({
         }
       });
     },
-     // cambia las notas completadas y las no completadas por categorías - MenuCategories.jsx
+    // cambia las notas completadas y las no completadas por categorías - MenuCategories.jsx
     setToggleCompleteNotesByCategory: (state, { payload }) => {
       //console.log({payload});
       // se requiere el noteState, note.complete y el note.color
@@ -124,6 +124,13 @@ export const notesSlice = createSlice({
         }
       });
     },
+
+    // la funcion de ordenamiento de todas las notas se realiza desde la base de datos
+    // ordena las notas por categoría seleccionada - MenuCategories.jsx
+    setOrderByCategory: state => {
+      state.notes ===
+        state.notes.sort((a, b) => a.priorityOrder - b.priorityOrder);
+    }
   }
 });
 
@@ -142,5 +149,6 @@ export const {
   onStablishCategories,
   onFilterCategories,
   setToggleCompleteNotes,
-  setToggleCompleteNotesByCategory
+  setToggleCompleteNotesByCategory,
+  setOrderByCategory
 } = notesSlice.actions;

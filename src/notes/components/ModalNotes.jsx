@@ -38,7 +38,7 @@ const initialForm = {
   end: addHours(new Date(), 1),
   priority: "",
   priorityColor: "#FFF",
-  orderPriority: 0,
+  priorityOrder: 0,
   stateNote: false,
   complete: false,
   spent: 0,
@@ -96,7 +96,7 @@ export const ModalNotes = () => {
     setErrorDatesMessage("");
     // desbloque el input de color - si el usuario a seleccionado una categoría mediante el select
     // al cerrar no elimina la categoría seleccionada en el select por ello hay que indicar que la borre
-    setFormValues({ ...initialForm, category: "" });
+    setFormValues({ ...initialForm });
     // cambio de estado del mensaje de error de las fechas
     setDisabledInputColor(false);
   };

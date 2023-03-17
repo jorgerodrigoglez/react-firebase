@@ -1,5 +1,6 @@
 export * from './loadNotes';
-export * from './loadNotesByCategory'
+export * from './loadNotesByCategory';
+export * from './loadNotesByPriority';
 export * from './formatDates';
 export * from './prioritiesTextValues';
 export * from './prioritiesOrder';

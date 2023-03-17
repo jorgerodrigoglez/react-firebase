@@ -13,6 +13,7 @@ export const Note = ({
   description,
   priority,
   priorityColor,
+  priorityOrder,
   start,
   end,
   complete,
@@ -51,6 +52,7 @@ export const Note = ({
         description,
         priority,
         priorityColor,
+        priorityOrder,
         start,
         end,
         complete,
@@ -130,16 +132,16 @@ export const Note = ({
         <div className="note__item__count">
           <div className="note__item__count--spent">
             <span>Gasto:</span>
-            <b>{spent}</b>€
+            <b> {spent}</b>€
           </div>
           <div className="note__item__count--entry">
             <span>Ingreso:</span>
-            <b>{entry}</b>€
+            <b> {entry}</b>€
           </div>
-          {/* <div className="note__item__count--total">
+          <div className="note__item__count--total">
             <span>Total:</span>
-            <b>{entry - spent}</b>€
-          </div> */}
+            <b> {entry - spent}</b>€
+          </div>
         </div>
       </div>
 

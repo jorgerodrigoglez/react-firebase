@@ -140,8 +140,7 @@
     &__count {
       @extend %center;
       display: flex;
-      justify-content: flex-end;
-      margin-right: 7px;
+      justify-content: space-evenly;
       &--spent,
       &--entry {
         margin-left: 2px;
@@ -150,14 +149,14 @@
         padding: $baselineheight;
         font-family: $basefont;
         font-size: fs(x-small);
-        background-color: $primary;
+        background-color: transparent;
       }
-      // &--total {
-      //   padding: $baselineheight;
-      //   font-family: $altfont;
-      //   font-size: fs(x-small);
-      //   font-weight: bold;
-      // }
+      &--total {
+        padding: $baselineheight;
+        font-family: $altfont;
+        font-size: fs(x-small);
+        font-weight: bold;
+      }
     }
 
     &__delete {

@@ -33,12 +33,14 @@
 }
 
 .not-categories{
+  padding: $gutterwidth;
   margin-left: $gutterwidth;
   font-family: $altfont;
   font-size: fs(small) * 1.2;
-  text-align: left;
-  font-weight: bold;
+  text-align: center;
+  font-weight: lighter;
   color: $black;
+  background-color: $compcolor;
 }
 
 .row {
