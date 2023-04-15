@@ -120,20 +120,20 @@
   border-top: solid 2px $compcolor;
   border-bottom: dashed 1px $compcolor;
 
-  &--item {
+  &--item{
     //margin: $baselineheight;
     width: auto;
     padding: $baselineheight;
-    margin-left: $baselineheight;
+    margin-left: $gutterwidth;
     margin-right: $baselineheight;
     display: inline-block;
-    width: auto;
     font-size: fs(small) * 1.2;
-    font-family: $basefont;
+    font-family: $altfont;
+    font-weight: bold;
     color: $black;
     background-color: transparent;
-    border-radius: 10px;
     opacity: .8;
+
 
     &:hover{
       opacity: 1;

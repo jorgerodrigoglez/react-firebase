@@ -2,6 +2,7 @@
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
+import { useUiStore } from "../../hooks";
 import { ModalNotes, MenuCategories } from "../components/";
 import { NothingSelected } from "./";
 import { Note } from "../components";
@@ -18,6 +19,14 @@ export const NotesPage = () => {
       Swall.fire("La nota ha sido actualizada", messageSaved, "success");
     }
   }, [messageSaved]);*/
+
+  // hook useUiStore - accion para abrir el modal
+  const { openModal } = useUiStore();
+
+  // accion de boton para abrir el modal - proviene del hook
+  const onOpenModal = () => {
+    openModal();
+  };
 
   return (
     <>
@@ -37,6 +46,10 @@ export const NotesPage = () => {
           )
         )}
       </div>
+
+      <button className="btn-plus" onClick={onOpenModal}>
+          <i className="far fa-plus"></i>
+        </button>
     </>
   );
 };

@@ -6,3 +6,7 @@ export * from './prioritiesTextValues';
 export * from './prioritiesOrder';
 export * from './deleteCategoriesRepeated';
 export * from './filterNotesMenuCategories';
+export * from './calendarLocalizer';
+export * from './getCalendarMessages';
+export * from './totalCountProject';
+export * from './formatCurrency';

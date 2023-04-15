@@ -107,7 +107,7 @@ export const MenuCategories = () => {
             {/* Items de otras funciones */}
             {itemsMenuNoRep.length > 1 && (
               <div
-                style={{ backgroundColor: selectColor }}
+                //style={{ backgroundColor: selectColor }}
                 className="menu__categories__items__categories--item"
                 onClick={loadingAllNotes}
               >
@@ -142,14 +142,14 @@ export const MenuCategories = () => {
             style={{ backgroundColor: selectColor }}
             className="items__menu--item"
             onClick={stateToggleBtn}
-            value={toggleBtn ? "No Completadas" : "Completadas"}
+            value={toggleBtn ? "No completadas" : "Completadas"}
           ></input>
           <input
             type="button"
             style={{ backgroundColor: selectColor }}
             className="items__menu--item"
             onClick={prioritiesBtn}
-            value="Prioridad"
+            value="Ordenar por prioridad"
           ></input>
         </div>
       )}
