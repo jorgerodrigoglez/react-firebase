@@ -5,8 +5,8 @@ import { useForm } from "../../hooks";
 import { startLoginWithEmailPassword } from "../../store/auth";
 
 const formData = {
-  email: "",
-  password: ""
+  email: "jrg@gmail.com",
+  password: "123456"
 }
 
 export const LoginPage = () => {
@@ -32,7 +32,8 @@ export const LoginPage = () => {
   return (
     <div className="auth">
       <form className="auth__form animate__animated animate__fadeIn animate__faster" onSubmit={onSubmit}>
-        <h3 className="auth__title">Login:</h3>
+        <h3 className="auth__title">Login:**Si quieres usar la demo</h3>
+        <p>**También puedes crear una nueva cuenta y hacer login con esa nueva cuenta creada</p>
         <input
           type="text"
           placeholder="Email"
