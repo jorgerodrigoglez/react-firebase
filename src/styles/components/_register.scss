@@ -1,6 +1,13 @@
 .auth {
     width: 100vw;
     background-color: $primary;
+
+    &__info{
+      padding: $baselineheight;
+      font-family: $altfont;
+      font-size: fs(x-small);
+      font-weight: bold;
+    }
   
     &__form {
       height: 100vh;
@@ -19,6 +26,7 @@
     }
   
     &__input {
+      margin-top: $baselineheight;
       padding: $baselineheight;
       margin-bottom: $baselineheight;
       font-family: $basefont;

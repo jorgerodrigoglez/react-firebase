@@ -32,8 +32,9 @@ export const LoginPage = () => {
   return (
     <div className="auth">
       <form className="auth__form animate__animated animate__fadeIn animate__faster" onSubmit={onSubmit}>
-        <h3 className="auth__title">Login:**Si quieres usar la demo</h3>
-        <p>**También puedes crear una nueva cuenta y hacer login con esa nueva cuenta creada</p>
+        <p className="auth__info">Login:**Si quieres usar la demo</p>
+        <p className="auth__info">**También puedes crear una nueva cuenta y hacer login con esa nueva cuenta creada</p>
+        <h3 className="auth__title">Login:</h3>
         <input
           type="text"
           placeholder="Email"
