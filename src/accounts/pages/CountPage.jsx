@@ -19,21 +19,20 @@ export const CountPage = () => {
   });
 
   return (
-    <div>
-      {categories && (
-        <ul className="total">
-          {deleteRepByCount.map(catcol => (
-            <CountTotal
-              catcol={catcol}
-              notes={notes}
-              key={uuidv4()}
-            />
-          ))}
-        </ul>
-      )}
+    <>
+      <div>
+        {categories && (
+          <ul className="total">
+            {deleteRepByCount.map(catcol => (
+              <CountTotal catcol={catcol} notes={notes} key={uuidv4()} />
+            ))}
+          </ul>
+        )}
+      </div>
+
       <div>
         <CountTotalProjects notes={notes} key={uuidv4()} />
       </div>
-    </div>
+    </>
   );
 };

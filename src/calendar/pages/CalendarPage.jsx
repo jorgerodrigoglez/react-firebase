@@ -9,7 +9,7 @@ import { CalendarEvent } from "../components";
 
 export const CalendarPage = () => {
   const [lastView, setLastView] = useState(
-    localStorage.getItem("lastView") || "agenda"
+    localStorage.getItem("lastView") || "moth"
   );
   // redux
   const { notes: events } = useSelector(state => state.notes);
