@@ -34,9 +34,9 @@ export const CountTotal = ({ catcol }) => {
             <h2 className="total__card--task">{card.task}</h2>
 
             <div className="total__card--total" >
-              <h3>Ingreso:{formatCurrency(card.entry)}</h3>
-              <h3>Gasto:{formatCurrency(card.spent)}</h3>
-              <h3>Diferencia:{formatCurrency(card.total)}</h3>
+              <p>Ingreso:<span>{formatCurrency(card.entry)}</span></p>
+              <p>Gasto:<span>{formatCurrency(card.spent)}</span></p>
+              <p>Diferencia:<span>{formatCurrency(card.total)}</span></p>
             </div>
           </div>
         ))}

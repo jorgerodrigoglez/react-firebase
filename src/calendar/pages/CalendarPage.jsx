@@ -51,7 +51,6 @@ export const CalendarPage = () => {
         culture="es"
         localizer={localizer}
         events={events}
-        //defaultView={"day"}
         defaultView={lastView}
         startAccessor="start"
         endAccessor="end"

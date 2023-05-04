@@ -14,6 +14,7 @@ export const checkingAuthentication = ( email, password ) => {
 // registro de usuario con email y password en firebase
 export const startCreatingUserWithEmailPassword = ({ email, password, displayName}) => {
     return async( dispatch )  => {
+        //console.log({email, password, displayName});
         // llama al reducer de authSlice
         dispatch(checkingCredentials());
         // llamada a la funcion de firebase/providers

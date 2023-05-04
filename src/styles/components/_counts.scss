@@ -1,16 +1,18 @@
 
 
 .total {
+  @extend %center;
   margin-top: $baselineheight;
-  display: flex;
-  width: 100%;
+  //display: flex;
+  display: block;
+  width: 90%;
   height: 100%;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  background-color: $primary;
+  //flex-wrap: wrap;
+  //justify-content: flex-start;
+  //background-color: $primary;
 
   &__card {
-    width: 32%;
+    width: 100%;
     padding: $baselineheight;
 
     &--project {
@@ -24,7 +26,8 @@
       padding: $baselineheight;
       padding-left: $gutterwidth;
       font-family: $basefont;
-      font-size: fs(small) * 1.4;
+      font-size: fs(normal);
+      text-align: left;
       background-color: $compcolor;
       opacity: .4;
     }
@@ -33,11 +36,11 @@
       display: flex;
       justify-content: space-around;
       padding: $gutterwidth;
-      opacity: .6;
+      opacity: 1;
       
-      h3{
+      p{
         font-family: $altfont;
-        font-size: fs(small) * 1.2;
+        font-size: fs(small) * 1.1;
       }
     }
     &--mytotal{
@@ -48,11 +51,13 @@
       border-top: dashed 1px $black;
     }
     &--mytotal-projects{
+      width: 85%;
+      @extend %center;
       text-align: center;
       padding: $gutterwidth;
       font-family: $basefont;
       font-size: fs(normal) * 1.2;
-      background-color: $compcolor;
+      //background-color: $compcolor;
     }
   }
 }
