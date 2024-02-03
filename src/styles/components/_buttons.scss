@@ -2,11 +2,11 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: $compcolor;
+  background-color: $button-active-blue;
   height: 80px;
   width: 80px;
   border-radius: 50%;
-  box-shadow: 2px 2px 5px $compcolor;
+  box-shadow: 1px 1px 3px $black;
 
   i {
     font-size: fs(huge);

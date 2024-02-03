@@ -100,8 +100,8 @@ $size-vars: (
   */
  
  // colors
- $primary: rgb(255,164,30);
- $compcolor: rgb(0,255,62); 
+ $primary: rgb(255,255,255);
+ $compcolor: rgba(214,211,214,0.5); 
  $light: rgb(255,255,255);
  $compcolor-light: lighten($compcolor, 10%);
 

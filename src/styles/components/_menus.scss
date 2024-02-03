@@ -80,6 +80,8 @@
   margin-top: $baselineheight * 1.2;
   margin-bottom: $baselineheight;
   text-align: left;
+  border-top: dashed 1px $black;
+  border-bottom: dashed 1px $black;
 
   &__items {
     display: inline-block;
@@ -106,6 +108,7 @@
 
         input[type="button"] {
           background-color: transparent;
+          font-weight: bold;
         }
       }
     }
@@ -116,9 +119,6 @@
   display: block;
   text-align: left;
   padding: $baselineheight;
-  border-top: dashed 1px $compcolor;
-  border-top: solid 2px $compcolor;
-  border-bottom: dashed 1px $compcolor;
 
   &--item{
     //margin: $baselineheight;
@@ -131,7 +131,7 @@
     font-family: $altfont;
     font-weight: bold;
     color: $black;
-    background-color: transparent;
+    background-color: $compcolor;
     opacity: .8;
 
 

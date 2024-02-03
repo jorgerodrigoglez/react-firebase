@@ -18,11 +18,10 @@
     &__check {
       width: auto;
       padding: $baselineheight;
-      background-color: transparent;
       cursor: pointer;
 
       &--complete {
-        background-color: transparent;
+        background-color: $primary;
       }
 
       span {
@@ -33,7 +32,6 @@
         text-align: left;
         font-family: $altfont;
         font-size: fs(small) * 1.2;
-        background-color: transparent;
       }
 
       i {
